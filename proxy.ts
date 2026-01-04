@@ -44,22 +44,24 @@ export async function proxy(request: NextRequest) {
 
           if (parsed.accessToken) {
             response.cookies.set("accessToken", parsed.accessToken, {
-              path: "/",
-              maxAge: Number(parsed["Max-Age"]),
+              path: "/", 
             });
           }
 
           if (parsed.refreshToken) {
             response.cookies.set("refreshToken", parsed.refreshToken, {
               path: "/",
-              maxAge: Number(parsed["Max-Age"]),
             });
           }
         }
 
         return response;
       }
-    } catch {}
+    } catch {
+      if (isPrivateRoute) {
+        return NextResponse.redirect(new URL("/sign-in", request.url));
+      }
+    }
   }
 
   if (isPrivateRoute) {
